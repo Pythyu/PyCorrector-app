@@ -74,25 +74,57 @@ class DataFra(SubFrame):
 
 
 class App:
+
+    state_string = {0 : "Setup each functions and associated inputs >",
+                    1 : "Set the expected inputs of each functions >",
+                    2 : "Select a score function >",
+                    3 : "Select Timeout Time >"}
+
+    yaml_state = {0: "functions:",
+                  1: "expected_outputs:",
+                  2: "score_functions:",
+                  3: "timeout_functions:"}
+
     def __init__(self):
         self.tk = Tk()
         self.tk.geometry("800x600")
 
+        self.state = 0
+        self.total_string = "static:\n"+"    myvar: [\"text1\"]\n"
 
         self.frames = []
+        self.mainLabel = Label(self.tk, text = "FUNCTIONS INPUTS >")
+        self.mainLabel.pack(side=TOP)
         self.button = Button(self.tk, text="+", command=self.reproduce)
         self.button.pack(side=TOP)
-        self.butconf = Button(self.tk, text="generate config file", command=self.configfill)
+        self.buttonNext = Button(self.tk, text="Next Step >", command=self.nextStep)
+        self.buttonNext.pack(side=LEFT)
+        self.butconf = Button(self.tk, text="config file generation will be available once the filling process will be over", command=None)
         self.butconf.pack(side=BOTTOM)
 
 
 
         self.tk.mainloop()
 
+    def nextStep(self):
+        if self.state < 3:
+            self.state += 1
+            if self.state == 3:
+                self.butconf["command"] = self.configfill
+                self.butconf["text"] = "Generate Config File !"
+            else:
+                self.configfill()
+            self.mainLabel["text"] = self.state_string[self.state]
+
     def reproduce(self):
         self.frames.append(FrameFunc(self.tk,title="Exemple Title",frameSide=TOP))
 
     def configfill(self):
+
+        if self.state == 3:
+            outfile = open("config.yaml", "w")
+
+        self.total_string += self.yaml_state[self.state] +"\n"
         for func in self.frames:
             name = func.entry.get()
             set_list = []
@@ -106,7 +138,15 @@ class App:
                     arg_list.append(Arguments(data_list))
                 set_list.append(arg_list[0])
             Config.FUNCTIONS.append(UserFunc(name, DataSet(set_list)))
-            print(Config.FUNCTIONS[-1])
+            self.total_string += "    " + str(Config.FUNCTIONS[-1]) + "\n"
+
+        if self.state == 3:
+            outfile.write(self.total_string)
+            outfile.close()
+            self.state = 0
+            self.total_string = ""
+            self.mainLabel["text"] = self.state_string[self.state]
+
 
 
 
