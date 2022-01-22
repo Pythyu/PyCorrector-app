@@ -1,0 +1,8 @@
+static:
+    myvar: ["text1"]
+functions:
+    testFUNC: [['DT1', 'DT2']]
+expected_outputs:
+    testFUNC: [['DT1', 'DT2']]
+timeout_functions:
+    testFUNC: [['DT1', 'DT2']]

@@ -108,12 +108,12 @@ class App:
 
     def nextStep(self):
         if self.state < 3:
-            self.state += 1
-            if self.state == 3:
+            if self.state == 2:
                 self.butconf["command"] = self.configfill
                 self.butconf["text"] = "Generate Config File !"
             else:
                 self.configfill()
+            self.state += 1
             self.mainLabel["text"] = self.state_string[self.state]
 
     def reproduce(self):
