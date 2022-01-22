@@ -5,13 +5,18 @@ from PySide6.QtCore import QFile, QIODevice, Qt
 
 data = []
 
+class GDATA:
+    currentFuncID = 0
+
+GDT = GDATA()
+
 def FuncMinus():
     window.listWidget.takeItem(window.listWidget.count()-1)
     data.pop()
 
 def FuncPlus():
     window.listWidget.addItem("New Function")
-    item = window.listWidget.item(window.listWidget.count()-1)
+    item = window.listWidget.item(GDT.currentFuncID)
     item.setFlags(item.flags() | Qt.ItemIsEditable)
     data.append([])
 
@@ -22,7 +27,25 @@ def get_selected():
     return selected[0]
 
 def OnFunctionChange():
-    pass
+
+    if len(data) <= 1:
+        return
+
+    if GDT.currentFuncID >= 0:
+        for i in range(len(data[GDT.currentFuncID])):
+            data[GDT.currentFuncID][i].setHidden(True)
+
+    selected = get_selected()
+    if selected is not None:
+        GDT.currentFuncID = window.listWidget.row(selected)
+        for itm in data[GDT.currentFuncID]:
+            itm.setHidden(False)
+    else:
+        GDT.currentFuncID = window.listWidget.count()-1
+        for itm in data[GDT.currentFuncID]:
+            itm.setHidden(False)
+
+
 
 
 def DataMinus():
