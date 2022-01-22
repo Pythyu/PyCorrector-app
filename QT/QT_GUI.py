@@ -7,6 +7,7 @@ data = []
 
 class GDATA:
     currentFuncID = 0
+    GL_CN = 0
 
 GDT = GDATA()
 
@@ -16,7 +17,7 @@ def FuncMinus():
 
 def FuncPlus():
     window.listWidget.addItem("New Function")
-    item = window.listWidget.item(GDT.currentFuncID)
+    item = window.listWidget.item(window.listWidget.count()-1)
     item.setFlags(item.flags() | Qt.ItemIsEditable)
     data.append([])
 
@@ -49,21 +50,28 @@ def OnFunctionChange():
 
 
 def DataMinus():
-    window.listWidget_2.takeItem(window.listWidget_2.count()-1)
-    item = window.listWidget_2.item(window.listWidget_2.count()-1)
     selected = get_selected()
     if selected is not None:
-        data[window.listWidget.row(selected)].pop()
+        accessList = data[window.listWidget.row(selected)]
+        if accessList:
+            deleted = accessList.pop()
+            window.listWidget_2.takeItem(window.listWidget_2.row(deleted))
     else:
-        data[window.listWidget.count()-1].pop()
+        accessList = data[window.listWidget.count()-1]
+        if accessList:
+            deleted = accessList.pop()
+            window.listWidget_2.takeItem(window.listWidget_2.row(deleted))
+
+
 def DataPlus():
-    window.listWidget_2.addItem("Donnée "+str(window.listWidget_2.count()))
+    window.listWidget_2.addItem("Donnée "+str(GDT.GL_CN))
     item = window.listWidget_2.item(window.listWidget_2.count()-1)
     selected = get_selected()
     if selected is not None:
         data[window.listWidget.row(selected)].append(item)
     else:
         data[window.listWidget.count()-1].append(item)
+    GDT.GL_CN += 1
 
 def SaveButton():
     print("Save")
