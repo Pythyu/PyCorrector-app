@@ -3,7 +3,8 @@ from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QFile, QIODevice, Qt
 
-data = []
+sets_data = []
+config_data = []
 
 class GDATA:
     currentFuncID = 0
@@ -13,51 +14,64 @@ GDT = GDATA()
 
 def FuncMinus():
     window.listWidget.takeItem(window.listWidget.count()-1)
-    data.pop()
+    sets_data.pop()
 
 def FuncPlus():
     window.listWidget.addItem("New Function")
     item = window.listWidget.item(window.listWidget.count()-1)
     item.setFlags(item.flags() | Qt.ItemIsEditable)
-    data.append([])
+    sets_data.append([])
 
-def get_selected():
-    selected = window.listWidget.selectedItems()
+def get_selected(widget):
+    selected = widget.selectedItems()
     if not selected:
         return None
     return selected[0]
 
 def OnFunctionChange():
-
-    if len(data) <= 1:
+    if len(sets_data) <= 1:
         return
 
     if GDT.currentFuncID >= 0:
-        for i in range(len(data[GDT.currentFuncID])):
-            data[GDT.currentFuncID][i].setHidden(True)
+        for i in range(len(sets_data[GDT.currentFuncID])):
+            sets_data[GDT.currentFuncID][i].setHidden(True)
 
-    selected = get_selected()
+    selected = get_selected(window.listWidget)
     if selected is not None:
         GDT.currentFuncID = window.listWidget.row(selected)
-        for itm in data[GDT.currentFuncID]:
+        for itm in sets_data[GDT.currentFuncID]:
             itm.setHidden(False)
     else:
         GDT.currentFuncID = window.listWidget.count()-1
-        for itm in data[GDT.currentFuncID]:
+        for itm in sets_data[GDT.currentFuncID]:
             itm.setHidden(False)
 
+def OnDataSetSelect():
+    selected = get_selected(window.listWidget_2)
+    ID = None
+    if selected is not None:
+        ID = int(selected.text().split(" ")[1])
+    else:
+        ID = window.listWidget_2.count() - 1
 
+
+    window.lineEdit.setText(config_data[ID][0])
+    window.lineEdit_2.setText(config_data[ID][1])
+    window.lineEdit_3.setText(config_data[ID][2])
+    window.lineEdit_4.setText(config_data[ID][3])
 
 
 def DataMinus():
-    selected = get_selected()
+    selected = get_selected(window.listWidget)
     if selected is not None:
-        accessList = data[window.listWidget.row(selected)]
+        accessID = window.listWidget.row(selected)
+        accessList = sets_data[accessID]
         if accessList:
             deleted = accessList.pop()
             window.listWidget_2.takeItem(window.listWidget_2.row(deleted))
     else:
-        accessList = data[window.listWidget.count()-1]
+        accessID = window.listWidget.count()-1
+        accessList = sets_data[accessID]
         if accessList:
             deleted = accessList.pop()
             window.listWidget_2.takeItem(window.listWidget_2.row(deleted))
@@ -66,15 +80,24 @@ def DataMinus():
 def DataPlus():
     window.listWidget_2.addItem("Donnée "+str(GDT.GL_CN))
     item = window.listWidget_2.item(window.listWidget_2.count()-1)
-    selected = get_selected()
+    selected = get_selected(window.listWidget)
     if selected is not None:
-        data[window.listWidget.row(selected)].append(item)
+        sets_data[window.listWidget.row(selected)].append(item)
+        config_data.append(["" for _ in range(4)])
     else:
-        data[window.listWidget.count()-1].append(item)
+        sets_data[window.listWidget.count()-1].append(item)
+        config_data.append(["" for _ in range(4)])
     GDT.GL_CN += 1
 
 def SaveButton():
-    print("Save")
+    selected = get_selected(window.listWidget_2)
+    ID = None
+    if selected is not None:
+        ID = int(selected.text().split(" ")[1])
+    else:
+        ID = window.listWidget_2.count() - 1
+
+    config_data[ID] = [window.lineEdit.text(),window.lineEdit_2.text(),window.lineEdit_3.text(),window.lineEdit_4.text()]
 
 def GenConfigButton():
     print("GenConfigButton")
@@ -105,6 +128,7 @@ if __name__ == "__main__":
     window.pushButton_6.clicked.connect(GenConfigButton)
 
     window.listWidget.itemSelectionChanged.connect(OnFunctionChange)
+    window.listWidget_2.itemSelectionChanged.connect(OnDataSetSelect)
 
     #
     window.show()
