@@ -2,9 +2,16 @@ import sys
 from PySide6.QtUiTools import QUiLoader
 from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QFile, QIODevice, Qt
+from Configurator import *
 
 sets_data = []
 config_data = []
+
+
+yaml_state = {0: "functions:",
+              1: "expected_outputs:",
+              2: "score_functions:",
+              3: "timeout_functions:"}
 
 class GDATA:
     currentFuncID = 0
@@ -100,7 +107,26 @@ def SaveButton():
     config_data[ID] = [window.lineEdit.text(),window.lineEdit_2.text(),window.lineEdit_3.text(),window.lineEdit_4.text()]
 
 def GenConfigButton():
-    print("GenConfigButton")
+
+    outfile = open("config.yaml", "w")
+
+    total_string = "static:\n"+"    myvar: [\"text1\"]\n"
+    for state in range(4):
+        total_string += yaml_state[state] +"\n"
+
+        for i,sets in enumerate(sets_data):
+            item = window.listWidget.item(i)
+            set_list = []
+            for k,elem in enumerate(sets):
+                payload_list = [Data(config_data[k][state])]
+                set_list.append(Arguments(payload_list))
+            Config.FUNCTIONS.append(UserFunc(item.text(), DataSet(set_list)))
+            total_string += "    " + str(Config.FUNCTIONS[-1]) + "\n"
+
+
+    outfile.write(total_string)
+    outfile.close()
+
 
 
 if __name__ == "__main__":
@@ -130,7 +156,6 @@ if __name__ == "__main__":
     window.listWidget.itemSelectionChanged.connect(OnFunctionChange)
     window.listWidget_2.itemSelectionChanged.connect(OnDataSetSelect)
 
-    #
     window.show()
 
     sys.exit(app.exec())
