@@ -1,8 +1,14 @@
 static:
     myvar: ["text1"]
 functions:
-    testFUNC: [['DT1', 'DT2']]
+    TestFunc: [['"Entry1"'], ['"Entry2"']]
+    Func2: [['"Entry1"']]
 expected_outputs:
-    testFUNC: [['DT1', 'DT2']]
+    TestFunc: [['"Out1"'], ['"out2"']]
+    Func2: [['"Out1"']]
+score_functions:
+    TestFunc: [['0'], ['0']]
+    Func2: [['0']]
 timeout_functions:
-    testFUNC: [['DT1', 'DT2']]
+    TestFunc: [['1'], ['1']]
+    Func2: [['1']]
