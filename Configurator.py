@@ -16,17 +16,25 @@ class UserFunc:
         return self.name+": "+str(self.value)
 
 class DataSet:
-    def __init__(self, data):
+    def __init__(self, data, stripped=False):
         self.dataset = data
+        self.stripped = stripped
 
     def __str__(self):
+        if self.stripped:
+            tmp = str([e.forward() for e in self.dataset])
+            tmp = tmp.replace("'","")
+            return tmp
         return str([e.forward() for e in self.dataset])
 
 class Arguments:
-    def __init__(self, args):
+    def __init__(self, args, stripped=False):
         self.args = args
+        self.stripped = stripped
 
     def forward(self):
+        if self.stripped:
+            return self.args[0].forward()
         return [e.forward() for e in self.args]
 
 class Data:

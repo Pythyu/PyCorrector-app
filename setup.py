@@ -6,9 +6,15 @@ Usage:
 """
 
 from setuptools import setup
+import glob
 
 APP = ['QT_GUI.py']
 DATA_FILES = ["GuiDesign.ui","Configurator.py"]
+
+for file in glob.glob("PyCorrector/*"):
+    if file not in DATA_FILES:
+        DATA_FILES.append(file)
+
 OPTIONS = {}
 
 setup(

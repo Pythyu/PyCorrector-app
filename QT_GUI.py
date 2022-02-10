@@ -119,8 +119,8 @@ def GenConfigButton():
             set_list = []
             for k,elem in enumerate(sets):
                 payload_list = [Data(config_data[k][state])]
-                set_list.append(Arguments(payload_list))
-            Config.FUNCTIONS.append(UserFunc(item.text(), DataSet(set_list)))
+                set_list.append(Arguments(payload_list, True))
+            Config.FUNCTIONS.append(UserFunc(item.text(), DataSet(set_list, True)))
             total_string += "    " + str(Config.FUNCTIONS[-1]) + "\n"
 
 
